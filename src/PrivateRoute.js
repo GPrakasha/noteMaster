@@ -3,6 +3,7 @@ import { Route } from  "react-router-dom";
 import Notes from './Notes.jsx';
 import EditNote from './EditNote';
 import { GoogleLogin } from 'react-google-login';
+import AddNote from "./AddNote.js";
 
 function  PrivateRoute () {
 
@@ -28,6 +29,10 @@ function  PrivateRoute () {
             </Route>
             <Route path="/notes/:id" exact>
                 <EditNote></EditNote>
+            </Route>
+            <Route path="/notes" exact>
+                <AddNote>
+                </AddNote>
             </Route>
         </>
     ) :

@@ -1,49 +1,66 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {  Form, Button } from 'react-bootstrap';
-import { useModal, Modal } from 'react-morphing-modal';
+import { Modal, useModal } from 'react-morphing-modal';
 import 'react-morphing-modal/dist/ReactMorphingModal.css';
 import firebase from './firebase';
+import { useHistory } from 'react-router-dom';
 
 function AddNote(props) {
 
     const [title, setTitle] = useState();
     const [note, setNote] = useState();
     const user_email = localStorage.user_email;
+    const history = useHistory();
+    const { modalProps, getTriggerProps } = useModal({
+        onClose: () => history.push('/')
+    });
+    const style = JSON.parse(localStorage.themes)[localStorage.currentTheme];
 
     function handleSave(title, note) {
-        var newNoteKey = firebase.database().ref().child('notes').push().key;
-        var noteObj = {
-            title: title,
-            note: note,
-            belongs_to: [user_email],
-            last_updated: firebase.database.ServerValue.TIMESTAMP
-        };
-        var update = {};
-        update['/notes/' + newNoteKey] = noteObj;
-        firebase.database().ref().update(JSON.parse(JSON.stringify(update)));
+        if (title || note) {
+            var newNoteKey = firebase.database().ref().child('notes').push().key;
+            var noteObj = {
+                title: title,
+                note: note,
+                belongs_to: [user_email],
+                last_updated: firebase.database.ServerValue.TIMESTAMP
+            };
+            var update = {};
+            update['/notes/' + newNoteKey] = noteObj;
+            firebase.database().ref().update(JSON.parse(JSON.stringify(update))).then(() => {
+                history.push('/')
+            });   
+        }
     }
 
+    useEffect(() => {
+        document.getElementById("add").click();
+    }, [])
+
     return (
-        <div>
-            <Modal {...props.modalProps}>
-                <Form onSubmit={() => handleSave(title, note)}>
-                    <Form.Group>
-                        <Form.Control required type="text" onChange={(e) => setTitle(e.target.value)}/>
-                    </Form.Group>
-                    <hr></hr>
-                    <Form.Group>
-                        <Form.Control style={{height: "70vh"}} as="textarea" rows={3} onChange={(e) => setNote(e.target.value)}/>
-                    </Form.Group>
-                    <Form.Group>
-                        <Button onClick={() => props.onHide}>
-                            Cancel
+        <div className="vh-100 d-flex w-100">
+            <div id="add" {...getTriggerProps({ background: style.background, color: style.color })}>Loading</div>
+            {
+                <Modal {...modalProps}>
+                    <Form>
+                        <Form.Group>
+                            <Form.Control  style={{ background: style.background, color: style.color }} required type="text" onChange={(e) => setTitle(e.target.value)} />
+                        </Form.Group>
+                        <hr></hr>
+                        <Form.Group>
+                            <Form.Control style={{ height: "70vh", background: style.background, color: style.color }} as="textarea" rows={3} onChange={(e) => setNote(e.target.value)} />
+                        </Form.Group>
+                        <Form.Group className="d-flex">
+                            <Button onClick={() => history.push('/')} variant={(localStorage.currentTheme === "light") ? "outline-secondary" : "primary"}>
+                                Cancel
+                            </Button>
+                            <Button type="button" className="ml-auto" variant={(localStorage.currentTheme === "light") ? "outline-primary" : "primary"} onClick={() => handleSave(title, note)}>
+                                Add
                         </Button>
-                        <Button type="submit">
-                            Add
-                        </Button>
-                    </Form.Group>
-                </Form>
-            </Modal>
+                        </Form.Group>
+                    </Form>
+                </Modal>       
+            }
         </div>
     )
 }

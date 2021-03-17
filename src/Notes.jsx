@@ -1,12 +1,8 @@
-import React, { useState, useEffect, Fragment } from 'react';
+import React, { useState, useEffect } from 'react';
 import firebase from './firebase';
 import FlipMove from 'react-flip-move';
-import Swal from 'sweetalert2';
 import { Switch, Input } from '@material-ui/core';
-import withReactContent from 'sweetalert2-react-content';
-import { Form, Col, Button, Nav } from 'react-bootstrap';
-import { useModal, Modal } from 'react-morphing-modal';
-import AddNote from './AddNote';
+import { Button } from 'react-bootstrap';
 import Note from './Note';
 import moment from 'moment';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
@@ -22,7 +18,6 @@ function Notes() {
     const [loaded, setLoaded] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const user_email = localStorage.user_email;
-    const { modalProps, getTriggerProps } = useModal();
     const [isMultiSelect, setMultiSelect] = useState(false);
     const [selectedNotes, setSelectedNotes] = useState([]);
     const [openShareModal, setShareModal] = useState(false);
@@ -153,17 +148,11 @@ function Notes() {
             <Button 
                 style={{width: "50%"}}
                 className="mb-auto ml-auto mr-auto"
-                onClick={() => setShowModal(true)} 
+                onClick={() => history.push('/notes')} 
                 variant={!light ? "primary" : "outline-primary" } 
-                {...getTriggerProps({ background: '#ECEBEB'})}
             >
                 Add
             </Button>
-            <AddNote
-                modalProps={modalProps}
-                show={showModal}
-                onHide={() => setShowModal(false)}
-            />
             <ShareNotes 
                 openShareModal={openShareModal}
                 onHide={() => setShareModal(false)}
