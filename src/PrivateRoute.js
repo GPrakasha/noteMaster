@@ -1,9 +1,10 @@
 import  React, { useState } from  "react";
-import { Route, Redirect } from  "react-router-dom";
-import firebase from 'firebase';
+import { Route } from  "react-router-dom";
+import Notes from './Notes.jsx';
+import EditNote from './EditNote';
 import { GoogleLogin } from 'react-google-login';
 
-function  PrivateRoute (props) {
+function  PrivateRoute () {
 
     const [user, setUser] = useState();
 
@@ -20,8 +21,18 @@ function  PrivateRoute (props) {
         setUser(res);
     }
 
-    return  user ? (<Route  path={props.path}  exact={props.exact} component={props.component} />) : 
+    return user ? (
+        <>
+            <Route path="/" exact >
+                <Notes></Notes>
+            </Route>
+            <Route path="/notes/:id" exact>
+                <EditNote></EditNote>
+            </Route>
+        </>
+    ) :
         <GoogleLogin
+            className="m-auto"
             clientId={clientId}
             onFailure={onFailure}
             onSuccess={onSuccess}

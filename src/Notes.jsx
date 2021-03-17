@@ -12,10 +12,12 @@ import moment from 'moment';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import ShareNotes from './ShareNotes';
+import { GoogleLogout } from 'react-google-login';
+import { useHistory } from 'react-router-dom';
 
 
 function Notes() {
-    
+
     const [notes, setNotes] = useState([]);
     const [loaded, setLoaded] = useState(false);
     const [showModal, setShowModal] = useState(false);
@@ -25,6 +27,17 @@ function Notes() {
     const [selectedNotes, setSelectedNotes] = useState([]);
     const [openShareModal, setShareModal] = useState(false);
     const [filteredNotes, setFilteredNotes] = useState();
+    const [light, setTheme] = useState(localStorage.currentTheme === "light");
+    const history = useHistory();
+
+    useEffect(() => {
+        light ?
+            localStorage.setItem("currentTheme","light")
+        :    
+            localStorage.setItem("currentTheme", "dark")
+        document.body.style.background = JSON.parse(localStorage.themes)[localStorage.currentTheme].background
+        document.body.style.color = JSON.parse(localStorage.themes)[localStorage.currentTheme].color
+    },[light])
 
     useEffect(() => {
         console.log(notes);
@@ -64,33 +77,65 @@ function Notes() {
     function handleSearch(e) {
         e.preventDefault();
         e.stopPropagation();
-        setFilteredNotes(notes.filter(note => note.title.includes(e.target.value)));
+        setFilteredNotes(notes.filter(note => note.title.toLocaleLowerCase().includes(e.target.value)));
+    }
+
+    function handleShare(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!selectedNotes.length > 0) {
+            alert("please select atleast one note");
+        } else {
+            setShareModal(true);
+        }
     }
 
     return (
-        <div className="d-flex flex-column">
+        <div className="d-flex flex-column w-100">
             <div className="d-flex flex-row mt-4">
-                <Button className="m-auto">Light<Switch checked={isMultiSelect} onChange={() => setMultiSelect(!isMultiSelect)} name="checkedA" />Dark</Button>
+                <Button className="m-auto" variant={!light ? "primary" : "outline-primary" }>
+                    Light
+                    <Switch
+                        checked={!light}
+                        onChange={() => setTheme(!light)}
+                    />
+                    Dark
+                </Button>
                 <div className="m-auto">
-                    <Input type="text" onChange={(e) => handleSearch(e)}></Input>
-                    <Button variant="outline-primary"><FontAwesomeIcon icon={faSearch}></FontAwesomeIcon></Button>
+                    <Input
+                        type="text"
+                        className={!light ? "border-bottom border-primary" : null}
+                        onChange={(e) => handleSearch(e)}
+                    ></Input>
+                    <Button variant={!light ? "primary" : "outline-primary" }>
+                        <FontAwesomeIcon icon={faSearch}></FontAwesomeIcon>
+                    </Button>
                 </div>
-                <Button variant="outline-secondary" className="m-auto">
+                <Button variant={!light ? "primary" : "outline-secondary" } className="m-auto">
                     Multi Select notes
-                    <Switch checked={isMultiSelect} onChange={() => setMultiSelect(!isMultiSelect)} name="checkedA" />
+                    <Switch
+                        checked={isMultiSelect}
+                        onChange={() => setMultiSelect(!isMultiSelect)}
+                    />
                 </Button>
                 {
                     isMultiSelect &&
-                    <Button variant="outline-secondary" className="m-auto">
-                        {selectedNotes.length} selected <Button onClick={() => setShareModal(true)}>Share</Button>
+                    <Button variant={!light ? "primary" : "outline-secondary" } className="m-auto">
+                        {selectedNotes.length} selected <Button onClick={(e) => handleShare(e)}>Share</Button>
                     </Button>
                 }
+                <div className="m-auto">
+                    <GoogleLogout
+                        clientId="658977310896-knrl3gka66fldh83dao2rhgbblmd4un9.apps.googleusercontent.com"
+                        buttonText="Logout"
+                        onLogoutSuccess={() => history.go(0)}
+                    ></GoogleLogout>
+                </div>
             </div>
-            <FlipMove className="mt-4">
+            <FlipMove className="mt-4 d-flex flex-column" key={filteredNotes?.length || notes.length}>
             {
-                loaded && notes ? 
+                (loaded && notes) ? 
                 filteredNotes.map((note, index) => (
-                    <div key={index}>
                         <Note
                             title={note.title} 
                             last_updated={
@@ -101,16 +146,15 @@ function Notes() {
                             id={note.id}
                             handleNoteSelection={handleNoteSelection}
                         />
-                    </div>
                 ))
-                : <div>Loader</div>
+                : <div className="m-auto">Loader</div>
             }
             </FlipMove>
             <Button 
                 style={{width: "50%"}}
-                className="m-auto"
+                className="mb-auto ml-auto mr-auto"
                 onClick={() => setShowModal(true)} 
-                variant="primary"  
+                variant={!light ? "primary" : "outline-primary" } 
                 {...getTriggerProps({ background: '#ECEBEB'})}
             >
                 Add

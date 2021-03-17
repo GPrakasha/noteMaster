@@ -1,18 +1,27 @@
-import { BrowserRouter as Router, Route } from 'react-router-dom';
-import Notes from './Notes.jsx';
-import Note from './Note';
-import Swal from 'sweetalert2/src/sweetalert2.js'
+import { BrowserRouter as Router } from 'react-router-dom';
 import PrivateRoute from './PrivateRoute.js';
 import "@sweetalert2/theme-material-ui";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
+
+  localStorage.setItem("themes", JSON.stringify({
+    light: {
+      background: "#fff",
+      color: "#000"
+    },
+    dark: {
+      background: "#000",
+      color: "#fff"
+    }
+  }));
+  
+
+  localStorage.setItem("currentTheme", (localStorage.currentTheme || "light"));
+
   return (
     <Router>
-      {/* <div> */}
-        <PrivateRoute path="/" component={Notes} exact></PrivateRoute>
-      {/* </div> */}
-      <PrivateRoute path="/notes/:id" component={Note} exact></PrivateRoute>
+        <PrivateRoute path="/" exact></PrivateRoute>
     </Router>
   );
 }

@@ -1,4 +1,4 @@
-import React,{useState} from 'react';
+import React,{useState, useEffect} from 'react';
 import {Modal, Button, Form} from 'react-bootstrap';
 import firebase from 'firebase';
 
@@ -6,47 +6,44 @@ function ShareNotes(props) {
 
     const [emails, setEmails] = useState([]);
     const [count, setCount] = useState(0);
-    const [noteSnap, setNoteSnap] = useState();
+    const [emailTags, setEmailTags] = useState([]);
 
     function handleEmailInput(email) {
-        var temp = emails;
+        var temp = [...emails];
         temp[count] = email;
-        console.log(emails, temp)
+        console.log(temp,count)
         setEmails(temp);
     }
 
-    const [emailTags, setEmailTags] = useState([
-        <Form.Group controlId="formBasicEmail">
-            <Form.Control type="email" placeholder="Enter email" id={count} onChange={(e) => handleEmailInput(e.target.value)}/>
-        </Form.Group>
-    ]);
+    useEffect(() => {
+        setEmailTags([...emailTags,
+        ...[
+            <Form.Group>
+                <Form.Control type="email" id={count} placeholder="Enter email" onChange={(e) => handleEmailInput(e.target.value)} />
+            </Form.Group>
+        ]
+        ]);
+    }, [count]);
 
     function addInput() {
-        setCount(count+1);
-        setEmailTags([...emailTags, 
-            <Form.Group controlId="formBasicEmail">
-            <Form.Control type="email" id={count} placeholder="Enter email" onChange={(e) => handleEmailInput(e.target.value)} />
-        </Form.Group>
-        ]);
+        const newEmail = count + 1; 
+        console.log(newEmail)
+        setCount(newEmail);
     }
-
-     
 
     function handleShare() {
         props.selectedNotes.map((noteId) => {
             firebase.database().ref('/notes/' + noteId ).get().then((snap) => {
-                setNoteSnap(snap.val());
-                console.log(noteSnap);
+                const data = snap.val();
+                var tempNote = { ...data };
+                tempNote.belongs_to = [...tempNote.belongs_to, ...emails];     
+                var update = {};
+                update['/notes/' + noteId] = tempNote;
+                console.log(update);
+                firebase.database().ref().update(JSON.parse(JSON.stringify(update))).then(() => {
+                    props.onHide();
+                });
             });
-            var tempNote = noteSnap;
-            console.log(noteSnap);
-            tempNote.belongs_to = [...tempNote.belongs_to, ...emails];
-            setNoteSnap(tempNote); 
-            console.log(tempNote);           
-            var update = {};
-            update['/notes/' + noteId] = noteSnap;
-            firebase.database().ref().update(JSON.parse(JSON.stringify(update)));
-
         })
 
     }
