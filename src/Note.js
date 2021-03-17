@@ -1,24 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import './Note.css'
-import { useModal } from 'react-morphing-modal';
-import EditNote from './EditNote';
+import React, { useState } from 'react';
+import './Note.css';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import firebase from 'firebase';
 import { faCheckSquare } from '@fortawesome/free-solid-svg-icons';
-import { useLocation, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 function Note(props) {
 
-    // const [showModal, setShowModal] = useState(false);
     const history = useHistory();
-    // const { modalProps, getTriggerProps } = useModal({
-    //     onClose: () => history.push('/')
-    // });
     const [isSelected, setSelected] = useState(false);
-    // const [note, setNote] = useState();
-    // const location = useLocation();
-    // const noteId = location.pathname.split('/')[2];
-    // const [loading, setLoading] = useState(false);
 
     const checkBox = {
         border: "1px solid gray",
@@ -37,22 +26,8 @@ function Note(props) {
         setSelected(!isSelected);
         props.handleNoteSelection(props.id, isSelected)
     }
-
-    // useEffect(() => {
-    //     firebase.database().ref('notes/' + (noteId || props.id)).on('value', function (snap) {
-    //         setNote(snap.val());
-    //     });
-    //     setLoading(true);
-    // }, []);
-
-    // useEffect(() => {
-    //     if (!props.id) {
-    //         document.getElementById(noteId || props.id).click();
-    //     }
-    // }, [note])
     
     function handleClick() {
-        // setShowModal(true);
         history.push('/notes/' + props.id);
     }
 

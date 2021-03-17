@@ -22,6 +22,7 @@ function ShareNotes(props) {
             </Form.Group>
         ]
         ]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [count]);
 
     function addInput() {
@@ -41,6 +42,7 @@ function ShareNotes(props) {
                     props.onHide();
                 });
             });
+            return null;
         })
 
     }

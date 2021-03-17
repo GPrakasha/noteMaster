@@ -52,6 +52,7 @@ function Notes() {
             setNotes([...new Set(allNotes, notes)]);
             setLoaded(true);
         });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     
     useEffect(() => {

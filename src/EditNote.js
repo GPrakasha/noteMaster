@@ -23,12 +23,14 @@ function EditNote() {
             setTitle(data.title);
             setLoaded(true);
         });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const style = JSON.parse(localStorage.themes)[localStorage.currentTheme];
 
     useEffect(() => {
         document.getElementById(noteId).click();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [loaded])
 
     function handleSave(title, note) {
