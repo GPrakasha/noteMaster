@@ -119,7 +119,7 @@ function Notes() {
                 }
                 <div className="m-auto">
                     <GoogleLogout
-                        clientId="658977310896-knrl3gka66fldh83dao2rhgbblmd4un9.apps.googleusercontent.com"
+                        clientId="369522005554-u0be98s6qpeg7p4hlcuggu7j0h88a6la.apps.googleusercontent.com"
                         buttonText="Logout"
                         onLogoutSuccess={() => history.go(0)}
                     ></GoogleLogout>
