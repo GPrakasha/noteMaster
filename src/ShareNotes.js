@@ -11,7 +11,6 @@ function ShareNotes(props) {
     function handleEmailInput(email) {
         var temp = [...emails];
         temp[count] = email;
-        console.log(temp,count)
         setEmails(temp);
     }
 
@@ -27,7 +26,6 @@ function ShareNotes(props) {
 
     function addInput() {
         const newEmail = count + 1; 
-        console.log(newEmail)
         setCount(newEmail);
     }
 
@@ -39,7 +37,6 @@ function ShareNotes(props) {
                 tempNote.belongs_to = [...tempNote.belongs_to, ...emails];     
                 var update = {};
                 update['/notes/' + noteId] = tempNote;
-                console.log(update);
                 firebase.database().ref().update(JSON.parse(JSON.stringify(update))).then(() => {
                     props.onHide();
                 });

@@ -16,7 +16,6 @@ function Notes() {
 
     const [notes, setNotes] = useState([]);
     const [loaded, setLoaded] = useState(false);
-    const [showModal, setShowModal] = useState(false);
     const user_email = localStorage.user_email;
     const [isMultiSelect, setMultiSelect] = useState(false);
     const [selectedNotes, setSelectedNotes] = useState([]);
@@ -35,14 +34,12 @@ function Notes() {
     },[light])
 
     useEffect(() => {
-        console.log(notes);
         var nodeRef = firebase.database().ref('notes');
         nodeRef.on('value', (snapshot) => {
             var allNotes = [];
             const data = snapshot.val();
             for(var key in data) {
                 if(data.hasOwnProperty(key)) {
-                    console.log(typeof(key));
                     data[key]["id"] = key;
                     data[key]?.belongs_to?.includes(user_email) && 
                         allNotes.push({
