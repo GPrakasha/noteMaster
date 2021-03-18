@@ -5,3 +5,9 @@
     border-radius: 10px;
     margin: auto;
 }
+
+@media only screen and (max-width: 600px) {
+    .NoteItem {
+      width: 100%;
+    }
+  }

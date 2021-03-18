@@ -85,7 +85,7 @@ function Notes() {
 
     return (
         <div className="d-flex flex-column w-100">
-            <div className="d-flex flex-row mt-4">
+            <div className="d-flex flex-wrap mt-4">
                 <Button className="m-auto" variant={!light ? "primary" : "outline-primary" }>
                     Light
                     <Switch
@@ -146,7 +146,7 @@ function Notes() {
             <Button 
                 style={{width: "50%"}}
                 className="mb-auto ml-auto mr-auto"
-                onClick={() => history.push('/notes')} 
+                onClick={() => history.push('/add')} 
                 variant={!light ? "primary" : "outline-primary" } 
             >
                 Add
