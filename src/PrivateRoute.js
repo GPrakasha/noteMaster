@@ -30,7 +30,7 @@ function  PrivateRoute () {
             <Route path="/notes/:id" exact>
                 <EditNote></EditNote>
             </Route>
-            <Route path="/notes" exact>
+            <Route path="/add" exact>
                 <AddNote>
                 </AddNote>
             </Route>
