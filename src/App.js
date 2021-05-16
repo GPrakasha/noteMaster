@@ -2,28 +2,42 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import PrivateRoute from './PrivateRoute.js';
 import "@sweetalert2/theme-material-ui";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { createStore } from 'redux';
+import combinedReducers from './redux/combinedReducers.js';
+import { defaultTheme, ThemeContext, Themes } from './theme/ThemeContext.js';
+import { useEffect, useState } from 'react';
+import firebase from 'firebase';
 
 function App() {
 
-  localStorage.setItem("themes", JSON.stringify({
-    light: {
-      background: "#fff",
-      color: "#000"
-    },
-    dark: {
-      background: "#000",
-      color: "#fff"
-    }
-  }));
-  
+  const [currentTheme, setCurrentTheme] = useState();
+
+  useEffect(() => {
+    setCurrentTheme(defaultTheme);
+    console.log(firebase.auth().currentUser)
+  },[])
+
+  function changeTheme() {
+      if(currentTheme === Themes.LIGHT) {
+          setCurrentTheme(Themes.DARK);
+      } else {
+          setCurrentTheme(Themes.LIGHT);
+      }
+  }
 
   localStorage.setItem("currentTheme", (localStorage.currentTheme || "light"));
 
   return (
     <Router>
-        <PrivateRoute path="/" exact></PrivateRoute>
+      <ThemeContext.Provider value={{currentTheme: currentTheme, changeTheme: () => changeTheme()}}>
+        <div style={currentTheme}>
+          <PrivateRoute path="/" exact></PrivateRoute>
+        </div>
+      </ThemeContext.Provider>
     </Router>
   );
 }
 
 export default App;
+
+export const store = createStore(combinedReducers, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__() );

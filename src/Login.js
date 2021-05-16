@@ -1,7 +1,5 @@
 import { GoogleLogin } from 'react-google-login';
 import { useState } from 'react';
-import { Redirect } from 'react-dom';
-import { Switch } from 'react-router-dom';
 import Notes from './Notes';
 
 function Login() {
@@ -22,7 +20,7 @@ function Login() {
     return (
 
         user ?
-        <Notes/>
+            <Notes/>            
         :
         <GoogleLogin
             clientId={clientId}

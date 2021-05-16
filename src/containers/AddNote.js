@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {  Form, Button } from 'react-bootstrap';
 import { Modal, useModal } from 'react-morphing-modal';
 import 'react-morphing-modal/dist/ReactMorphingModal.css';
-import firebase from './firebase';
+import firebase from 'firebase';
 import { useHistory } from 'react-router-dom';
 
 function AddNote(props) {

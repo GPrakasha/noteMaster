@@ -1,18 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import firebase from './firebase';
+import React, { useState, useEffect, useContext } from 'react';
+import firebase from 'firebase';
 import FlipMove from 'react-flip-move';
 import { Switch, Input } from '@material-ui/core';
 import { Button } from 'react-bootstrap';
-import Note from './Note';
+import Note from '../components/Note';
 import moment from 'moment';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
-import ShareNotes from './ShareNotes';
+import ShareNotes from '../components/ShareNotes';
 import { GoogleLogout } from 'react-google-login';
 import { useHistory } from 'react-router-dom';
+import { store } from '../App.js';
+import { ThemeContext, Themes } from '../theme/ThemeContext';
+import ThemedButton from '../components/ThemedButton';
 
-
-function Notes() {
+function Notes(props) {
 
     const [notes, setNotes] = useState([]);
     const [loaded, setLoaded] = useState(false);
@@ -21,39 +23,39 @@ function Notes() {
     const [selectedNotes, setSelectedNotes] = useState([]);
     const [openShareModal, setShareModal] = useState(false);
     const [filteredNotes, setFilteredNotes] = useState();
-    const [light, setTheme] = useState(localStorage.currentTheme === "light");
     const history = useHistory();
 
     useEffect(() => {
-        light ?
-            localStorage.setItem("currentTheme","light")
-        :    
-            localStorage.setItem("currentTheme", "dark")
-        document.body.style.background = JSON.parse(localStorage.themes)[localStorage.currentTheme].background
-        document.body.style.color = JSON.parse(localStorage.themes)[localStorage.currentTheme].color
-    },[light])
-
-    useEffect(() => {
-        var nodeRef = firebase.database().ref('notes');
-        nodeRef.on('value', (snapshot) => {
-            var allNotes = [];
-            const data = snapshot.val();
-            for(var key in data) {
-                if(data.hasOwnProperty(key)) {
-                    data[key]["id"] = key;
-                    data[key]?.belongs_to?.includes(user_email) && 
-                        allNotes.push({
-                            title: data[key].title,
-                            last_updated: data[key].last_updated,
-                            id: key
-                        }) ;
-                }
-            }
-            setNotes([...new Set(allNotes, notes)]);
+        if(store.getState().notesReducer.notes.length !== 0) {
+            setNotes(store.getState().notesReducer.notes);
             setLoaded(true);
-        });
+        } else {
+            var nodeRef = firebase.database().ref('notes');
+            nodeRef.on('value', (snapshot) => {
+                var allNotes = [];
+                const data = snapshot.val();
+                for (var key in data) {
+                    if (data.hasOwnProperty(key)) {
+                        data[key]["id"] = key;
+                        data[key]?.belongs_to?.includes(user_email) &&
+                            allNotes.push({
+                                title: data[key].title,
+                                last_updated: data[key].last_updated,
+                                id: key
+                            });
+                    }
+                }
+                setNotes(allNotes);
+                store.dispatch({
+                    type: 'ADD_NOTE',
+                    notes: allNotes
+                });
+                setLoaded(true);
+            });
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
     
     useEffect(() => {
         setFilteredNotes(notes);
@@ -64,7 +66,6 @@ function Notes() {
             setSelectedNotes([...selectedNotes, key])
         :
             setSelectedNotes(selectedNotes.filter((x) => x !== key));
-            
     }
 
     function handleSearch(e) {
@@ -82,40 +83,41 @@ function Notes() {
             setShareModal(true);
         }
     }
+    const theme = useContext(ThemeContext);
 
     return (
         <div className="d-flex flex-column w-100">
             <div className="d-flex flex-wrap mt-4">
-                <Button className="m-auto" variant={!light ? "primary" : "outline-primary" }>
+                <ThemedButton className="m-auto">
                     Light
                     <Switch
-                        checked={!light}
-                        onChange={() => setTheme(!light)}
+                        checked={theme.currentTheme !== Themes.LIGHT}
+                        onChange={() => theme.changeTheme()}
                     />
                     Dark
-                </Button>
+                </ThemedButton>
                 <div className="m-auto">
                     <Input
                         type="text"
-                        className={!light ? "border-bottom border-primary" : null}
+                        className={theme.currentTheme !== Themes.LIGHT ? "border-bottom border-primary" : null}
                         onChange={(e) => handleSearch(e)}
                     ></Input>
-                    <Button variant={!light ? "primary" : "outline-primary" }>
+                    <ThemedButton>
                         <FontAwesomeIcon icon={faSearch}></FontAwesomeIcon>
-                    </Button>
+                    </ThemedButton>
                 </div>
-                <Button variant={!light ? "primary" : "outline-secondary" } className="m-auto">
+                <ThemedButton className="m-auto">
                     Multi Select notes
                     <Switch
                         checked={isMultiSelect}
                         onChange={() => setMultiSelect(!isMultiSelect)}
                     />
-                </Button>
+                </ThemedButton>
                 {
                     isMultiSelect &&
-                    <Button variant={!light ? "primary" : "outline-secondary" } className="m-auto">
+                    <ThemedButton className="m-auto">
                         {selectedNotes.length} selected <Button onClick={(e) => handleShare(e)}>Share</Button>
-                    </Button>
+                    </ThemedButton>
                 }
                 <div className="m-auto">
                     <GoogleLogout
@@ -143,14 +145,13 @@ function Notes() {
                 : <div className="m-auto">Loader</div>
             }
             </FlipMove>
-            <Button 
+            <ThemedButton 
                 style={{width: "50%"}}
                 className="mb-auto ml-auto mr-auto"
-                onClick={() => history.push('/add')} 
-                variant={!light ? "primary" : "outline-primary" } 
+                onClick={() => history.push('/add')}
             >
                 Add
-            </Button>
+            </ThemedButton>
             <ShareNotes 
                 openShareModal={openShareModal}
                 onHide={() => setShareModal(false)}
@@ -159,5 +160,6 @@ function Notes() {
         </div>
     );
 }
+
 
 export default Notes;
