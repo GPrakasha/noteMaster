@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './Note.css';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import { faCheckSquare } from '@fortawesome/free-solid-svg-icons';
@@ -7,7 +7,7 @@ import { useHistory } from 'react-router-dom';
 function Note(props) {
 
     const history = useHistory();
-    const [isSelected, setSelected] = useState(false);
+    // const [isSelected, setSelected] = useState(false);
 
     const checkBox = {
         border: "1px solid gray",
@@ -17,15 +17,20 @@ function Note(props) {
         marginTop: "auto",
         marginBottom: "auto",
         marginLeft: "10px",
+        marginRight: "-5px",
         borderRadius: "4px",
     }
 
     function handleCheck(e) {
         e.stopPropagation();
         e.preventDefault();
-        setSelected(!isSelected);
-        props.handleNoteSelection(props.id, isSelected)
+        // setSelected(!isSelected);
+        props.handleNoteSelection(props.id, props.isSelected)
     }
+
+    // useEffect(() => {
+    //     setSelected(props.isSelected)
+    // },[props.isSelected]);
     
     function handleClick() {
         history.push('/notes/' + props.id);
@@ -42,13 +47,13 @@ function Note(props) {
             {
                 props.isMultiSelect &&
                 <div style={props?.isMultiSelect ? checkBox : null} onClick={(e) => handleCheck(e)}>
-                    {isSelected ? <FontAwesomeIcon icon={faCheckSquare} className="m-auto" size="2x" /> : null}
+                    {props.isSelected ? <FontAwesomeIcon icon={faCheckSquare} className="m-auto" size="2x" /> : null}
                 </div>
             }
-            <div className="mr-auto ml-4 mt-auto mb-auto text-truncate" style={{ maxWidth: "75%" }}>
+            <div className="mr-auto ml-3 mt-auto mb-auto text-truncate" style={{ width: "50%" }}>
                 {props?.title}
             </div>
-            <div className="ml-auto mr-4 mt-auto mb-auto text-truncate">
+            <div className="ml-auto mr-3 mt-auto mb-auto text-truncate">
                 {props?.last_updated}
             </div>
         </div>

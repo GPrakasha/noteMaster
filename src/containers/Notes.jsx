@@ -8,7 +8,6 @@ import moment from 'moment';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import ShareNotes from '../components/ShareNotes';
-import { GoogleLogout } from 'react-google-login';
 import { useHistory } from 'react-router-dom';
 import { store } from '../App.js';
 import { ThemeContext, Themes } from '../theme/ThemeContext';
@@ -48,7 +47,9 @@ function Notes(props) {
                 setNotes(allNotes);
                 store.dispatch({
                     type: 'ADD_NOTE',
-                    notes: allNotes
+                    payload: {
+                        notes: allNotes
+                    }
                 });
                 setLoaded(true);
             });
@@ -83,10 +84,11 @@ function Notes(props) {
             setShareModal(true);
         }
     }
+
     const theme = useContext(ThemeContext);
 
     return (
-        <div className="d-flex flex-column w-100">
+        <div className="d-flex flex-column w-100" style={{minHeight: "100vh", overflowY: "scroll"}}>
             <div className="d-flex flex-wrap mt-4">
                 <ThemedButton className="m-auto">
                     Light
@@ -99,10 +101,11 @@ function Notes(props) {
                 <div className="m-auto">
                     <Input
                         type="text"
+                        style={{height: "52px"}}
                         className={theme.currentTheme !== Themes.LIGHT ? "border-bottom border-primary" : null}
                         onChange={(e) => handleSearch(e)}
                     ></Input>
-                    <ThemedButton>
+                    <ThemedButton style={{height: "52px", width: "52px"}}>
                         <FontAwesomeIcon icon={faSearch}></FontAwesomeIcon>
                     </ThemedButton>
                 </div>
@@ -110,37 +113,36 @@ function Notes(props) {
                     Multi Select notes
                     <Switch
                         checked={isMultiSelect}
-                        onChange={() => setMultiSelect(!isMultiSelect)}
+                        onChange={() => {
+                            setMultiSelect(!isMultiSelect);
+                            setSelectedNotes([]);
+                        }}
                     />
                 </ThemedButton>
                 {
-                    isMultiSelect &&
                     <ThemedButton className="m-auto">
-                        {selectedNotes.length} selected <Button onClick={(e) => handleShare(e)}>Share</Button>
+                        {selectedNotes.length} selected <Button className={(!selectedNotes.length > 0) ? '' : ''} disabled={!selectedNotes.length > 0} onClick={(e) => handleShare(e)}>Share</Button>
                     </ThemedButton>
                 }
                 <div className="m-auto">
-                    <GoogleLogout
-                        clientId="369522005554-u0be98s6qpeg7p4hlcuggu7j0h88a6la.apps.googleusercontent.com"
-                        buttonText="Logout"
-                        onLogoutSuccess={() => history.go(0)}
-                    ></GoogleLogout>
+                    <ThemedButton style={{height: "52px"}} onClick={() => {firebase.auth().signOut(); history.go('')}}>Logout</ThemedButton>
                 </div>
             </div>
-            <FlipMove className="mt-4 d-flex flex-column" key={filteredNotes?.length || notes.length}>
+            <FlipMove enterAnimation="none" leaveAnimation="none"  className="mt-4 d-flex flex-column" key={filteredNotes?.length || selectedNotes}>
             {
                 (loaded && notes) ? 
                 filteredNotes.map((note, index) => (
-                        <Note
-                            title={note.title} 
-                            last_updated={
-                                moment(notes.last_updated).fromNow()
-                            }
-                            isMultiSelect={isMultiSelect}
-                            key={note.id}
-                            id={note.id}
-                            handleNoteSelection={handleNoteSelection}
-                        />
+                    <Note
+                        title={note.title} 
+                        last_updated={
+                            moment(notes.last_updated).fromNow()
+                        }
+                        isMultiSelect={isMultiSelect}
+                        isSelected={selectedNotes.includes(note.id)}
+                        key={note.id}
+                        id={note.id}
+                        handleNoteSelection={handleNoteSelection}
+                    />
                 ))
                 : <div className="m-auto">Loader</div>
             }

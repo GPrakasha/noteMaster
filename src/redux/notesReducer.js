@@ -5,6 +5,7 @@ const default_state = {
 };
 
 export function notesReducer(state = default_state, action) {
+    console.log(action);
     switch(action.type) {
         case NOTE_ACTION.ADD:
             const newState = [...new Set(...state.notes,action.notes)];

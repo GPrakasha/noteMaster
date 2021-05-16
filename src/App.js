@@ -14,7 +14,7 @@ function App() {
 
   useEffect(() => {
     setCurrentTheme(defaultTheme);
-    console.log(firebase.auth().currentUser)
+    console.log(firebase.auth().currentUser,"asd");
   },[])
 
   function changeTheme() {

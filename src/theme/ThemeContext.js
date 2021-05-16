@@ -6,7 +6,7 @@ export const Themes = {
         color: "black",
     },
     DARK: {
-        backgroundColor: "black",
+        backgroundColor: "#0e49b5",
         color: "white",
     }
 }

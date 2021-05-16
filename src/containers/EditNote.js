@@ -1,8 +1,9 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import firebase from 'firebase';
 import {Form, Button} from 'react-bootstrap';
 import { Modal, useModal } from 'react-morphing-modal';
 import { useHistory, useLocation } from 'react-router-dom';
+import { ThemeContext } from '../theme/ThemeContext';
 
 function EditNote() {
     const [title, setTitle] = useState();
@@ -26,8 +27,6 @@ function EditNote() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const style = JSON.parse(localStorage.themes)[localStorage.currentTheme];
-
     useEffect(() => {
         document.getElementById(noteId).click();
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -47,19 +46,21 @@ function EditNote() {
         });
     }
 
+    const theme = useContext(ThemeContext);
+
     return (
         <div className="vh-100 d-flex w-100">
-            <div id={noteId} {...getTriggerProps({ background: style.background, color: style.color })} className="m-auto">Loading</div>
+            <div id={noteId} {...getTriggerProps({ background: theme.background, color: theme.color })} className="m-auto">Loading</div>
             {
                 loaded && (
                     <Modal {...modalProps}>
                     <Form>
                         <Form.Group>
-                            <Form.Control style={{ background: style.background, color: style.color }} defaultValue={title} required type="text" onChange={(e) => setTitle(e.target.value)} />
+                            <Form.Control style={{ background: theme.background, color: theme.color }} defaultValue={title} required type="text" onChange={(e) => setTitle(e.target.value)} />
                         </Form.Group>
                         <hr></hr>
                         <Form.Group>
-                            <Form.Control style={{ height: "70vh", background: style.background, color: style.color }} defaultValue={note} as="textarea" rows={3} onChange={(e) => setNote(e.target.value)} />
+                            <Form.Control style={{ minHeight: "50vh", background: theme.background, color: theme.color }} defaultValue={note} as="textarea" rows={3} onChange={(e) => setNote(e.target.value)} />
                         </Form.Group>
                         <Form.Group className="d-flex">
                             <Button onClick={() => history.push('/')} variant={(localStorage.currentTheme === "light") ? "outline-secondary" : "primary" }>

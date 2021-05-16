@@ -1,6 +1,7 @@
-import React,{useState, useEffect} from 'react';
+import React,{useState, useEffect, useContext} from 'react';
 import {Modal, Button, Form} from 'react-bootstrap';
 import firebase from 'firebase';
+import { ThemeContext } from '../theme/ThemeContext';
 
 function ShareNotes(props) {
 
@@ -47,12 +48,15 @@ function ShareNotes(props) {
 
     }
 
+    const theme = useContext(ThemeContext);
+    console.log(theme)
+
     return (
-        <Modal show={props.openShareModal} onHide={() => props.onHide()}>
-            <Modal.Header closeButton>
-                <Modal.Title>Modal heading</Modal.Title>
+        <Modal style={theme.currentTheme} show={props.openShareModal} onHide={() => props.onHide()}>
+            <Modal.Header style={theme.currentTheme} closeButton>
+                <Modal.Title style={theme.currentTheme}>Modal heading</Modal.Title>
             </Modal.Header>
-            <Modal.Body>
+            <Modal.Body  style={theme.currentTheme}>
                 <Form.Text className="text-muted">
                     We'll never share your email with anyone else.
                 </Form.Text>

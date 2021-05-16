@@ -2,29 +2,30 @@ import  React, { useState } from  "react";
 import { Route } from  "react-router-dom";
 import Notes from './containers/Notes.jsx';
 import EditNote from './containers/EditNote';
-import { GoogleLogin } from 'react-google-login';
 import AddNote from "./containers/AddNote.js";
+import LoginPage from "./containers/LoginPage.js";
+import firebase from 'firebase';
 
 function  PrivateRoute () {
 
     const [user, setUser] = useState();
+    const [showLogin, setLoginPage] = useState(false);
 
-    const clientId = "369522005554-u0be98s6qpeg7p4hlcuggu7j0h88a6la.apps.googleusercontent.com";
+    firebase.auth().onAuthStateChanged(function (user) {
+        if (user) {
+            console.log(user, "user");
+            setUser(user)
+            setLoginPage(false);
+        } else {
+            setLoginPage(true);
+            console.log(user, "user");
+        }
+    });
 
-    function onSuccess(res) {
-        setUser(res);
-        localStorage.setItem("user_email", res.profileObj.email);
-        console.log(res);
-    }
-
-    function onFailure(res) {
-        console.log(res, "fAILED");
-    }
-
-    return user ? (
+    return (user && !showLogin) ? (
         <>
             <Route path="/" exact>
-                <Notes></Notes>
+                <Notes setUser={setUser}></Notes>
             </Route>
             <Route path="/notes/:id" exact>
                 <EditNote></EditNote>
@@ -34,15 +35,15 @@ function  PrivateRoute () {
                 </AddNote>
             </Route>
         </>
-    ) :
-        <GoogleLogin
-            className="m-auto"
-            clientId={clientId}
-            onFailure={onFailure}
-            onSuccess={onSuccess}
-            buttonText="Login"
-            cookiePolicy="single_host_origin"
-            isSignedIn={true}
-        />;
+    ) : showLogin ?
+        <LoginPage setUser={setUser} />
+     : (
+        <div className="d-flex flex-row vh-100">
+            <div className="spinner-grow text-primary m-auto" role="status">
+                <span className="sr-only">Loading...</span>
+            </div>
+        </div>
+    )
+        
 };
-export  default  PrivateRoute;
+export default PrivateRoute;

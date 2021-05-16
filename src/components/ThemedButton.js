@@ -10,7 +10,9 @@ function ThemedButton(props) {
             className={props.className} 
             onClick={props.onClick}  
             variant={theme.currentTheme !== Themes.LIGHT ? "primary" : "outline-primary"} 
-            style={theme, props.style}>
+            style={theme, props.style}
+            disabled={props.disabled}
+        >
             {props.children}
         </Button>
     )
