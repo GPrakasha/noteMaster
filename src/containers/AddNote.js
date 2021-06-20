@@ -16,7 +16,6 @@ function AddNote(props) {
     const { modalProps, getTriggerProps } = useModal({
         onClose: () => history.push('/')
     });
-    const style = JSON.parse(localStorage.themes)[localStorage.currentTheme];
 
     function handleSave(title, note) {
         if (title || note) {
