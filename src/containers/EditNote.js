@@ -4,6 +4,7 @@ import {Form, Button} from 'react-bootstrap';
 import { Modal, useModal } from 'react-morphing-modal';
 import { useHistory, useLocation } from 'react-router-dom';
 import { ThemeContext } from '../theme/ThemeContext';
+import CustomLoader from '../common/Loader';
 
 function EditNote() {
     const [title, setTitle] = useState();
@@ -50,17 +51,19 @@ function EditNote() {
 
     return (
         <div className="vh-100 d-flex w-100">
-            <div id={noteId} {...getTriggerProps({ background: theme.background, color: theme.color })} className="m-auto">Loading</div>
+            <div id={noteId} {...getTriggerProps({ background: theme.backgroundColor, color: theme.color })} className="m-auto">
+                <CustomLoader />
+            </div>
             {
                 loaded && (
                     <Modal {...modalProps}>
                     <Form>
                         <Form.Group>
-                            <Form.Control style={{ background: theme.background, color: theme.color }} defaultValue={title} required type="text" onChange={(e) => setTitle(e.target.value)} />
+                            <Form.Control style={{ background: theme.backgroundColor, color: theme.color }} defaultValue={title} required type="text" onChange={(e) => setTitle(e.target.value)} />
                         </Form.Group>
                         <hr></hr>
                         <Form.Group>
-                            <Form.Control style={{ minHeight: "50vh", background: theme.background, color: theme.color }} defaultValue={note} as="textarea" rows={3} onChange={(e) => setNote(e.target.value)} />
+                            <Form.Control style={{ minHeight: "50vh", backgroundColor: theme.backgroundColor, color: theme.color }} defaultValue={note} as="textarea" rows={3} onChange={(e) => setNote(e.target.value)} />
                         </Form.Group>
                         <Form.Group className="d-flex">
                             <Button onClick={() => history.push('/')} variant={(localStorage.currentTheme === "light") ? "outline-secondary" : "primary" }>

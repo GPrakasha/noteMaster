@@ -26,6 +26,13 @@ function ShareNotes(props) {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [count]);
 
+
+    useEffect(() => {
+        return () => {
+            setCount(0);
+        }
+    },[]);
+
     function addInput() {
         const newEmail = count + 1; 
         setCount(newEmail);
@@ -36,8 +43,8 @@ function ShareNotes(props) {
             firebase.database().ref('/notes/' + noteId ).get().then((snap) => {
                 const data = snap.val();
                 var tempNote = { ...data };
-                tempNote.belongs_to = [...tempNote.belongs_to, ...emails];     
                 var update = {};
+                tempNote.belongs_to = [...tempNote.belongs_to, ...emails];     
                 update['/notes/' + noteId] = tempNote;
                 firebase.database().ref().update(JSON.parse(JSON.stringify(update))).then(() => {
                     props.onHide();
@@ -49,15 +56,14 @@ function ShareNotes(props) {
     }
 
     const theme = useContext(ThemeContext);
-    console.log(theme)
 
     return (
-        <Modal style={theme.currentTheme} show={props.openShareModal} onHide={() => props.onHide()}>
+        <Modal show={props.openShareModal} onHide={() => props.onHide()}>
             <Modal.Header style={theme.currentTheme} closeButton>
-                <Modal.Title style={theme.currentTheme}>Modal heading</Modal.Title>
+                <Modal.Title style={theme.currentTheme}>Share Notes</Modal.Title>
             </Modal.Header>
             <Modal.Body  style={theme.currentTheme}>
-                <Form.Text className="text-muted">
+                <Form.Text className="text-muted" style={theme.color}>
                     We'll never share your email with anyone else.
                 </Form.Text>
                 <Form.Label>Share to</Form.Label>

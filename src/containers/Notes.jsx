@@ -6,12 +6,13 @@ import { Button } from 'react-bootstrap';
 import Note from '../components/Note';
 import moment from 'moment';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import { faSearch, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import ShareNotes from '../components/ShareNotes';
 import { useHistory } from 'react-router-dom';
 import { store } from '../App.js';
 import { ThemeContext, Themes } from '../theme/ThemeContext';
 import ThemedButton from '../components/ThemedButton';
+import CustomLoader from '../common/Loader';
 
 function Notes(props) {
 
@@ -125,7 +126,7 @@ function Notes(props) {
                     </ThemedButton>
                 }
                 <div className="m-auto">
-                    <ThemedButton style={{height: "52px"}} onClick={() => {firebase.auth().signOut(); history.go('')}}>Logout</ThemedButton>
+                    <ThemedButton style={{height: "52px"}} onClick={() => {firebase.auth().signOut(); history.go('')}}><div><FontAwesomeIcon icon={faSignOutAlt} className="mr-2"></FontAwesomeIcon>Logout</div></ThemedButton>
                 </div>
             </div>
             <FlipMove enterAnimation="none" leaveAnimation="none"  className="mt-4 d-flex flex-column" key={filteredNotes?.length || selectedNotes}>
@@ -135,7 +136,7 @@ function Notes(props) {
                     <Note
                         title={note.title} 
                         last_updated={
-                            moment(notes.last_updated).fromNow()
+                            moment(note.last_updated).fromNow()
                         }
                         isMultiSelect={isMultiSelect}
                         isSelected={selectedNotes.includes(note.id)}
@@ -144,7 +145,10 @@ function Notes(props) {
                         handleNoteSelection={handleNoteSelection}
                     />
                 ))
-                : <div className="m-auto">Loader</div>
+                : 
+                <div className="m-auto">
+                    <CustomLoader />
+                </div>
             }
             </FlipMove>
             <ThemedButton 

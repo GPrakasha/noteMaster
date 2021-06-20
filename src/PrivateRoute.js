@@ -5,6 +5,7 @@ import EditNote from './containers/EditNote';
 import AddNote from "./containers/AddNote.js";
 import LoginPage from "./containers/LoginPage.js";
 import firebase from 'firebase';
+import CustomLoader from "./common/Loader.js";
 
 function  PrivateRoute () {
 
@@ -39,8 +40,10 @@ function  PrivateRoute () {
         <LoginPage setUser={setUser} />
      : (
         <div className="d-flex flex-row vh-100">
-            <div className="spinner-grow text-primary m-auto" role="status">
-                <span className="sr-only">Loading...</span>
+            <div className="text-primary m-auto" role="status">
+                <span className="sr-only">
+                    <CustomLoader/>
+                </span>
             </div>
         </div>
     )
